@@ -28,7 +28,7 @@ DATBASE_URL = os.getenv("DATABASE_URL")
 SECRET_KEY = "django-insecure-n4n7*wxl8ez1yto@su&d26crf#a+h4n3i7(z7l5xt3(5odqh4y"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -45,13 +45,22 @@ INSTALLED_APPS = [
     "api.apps.ApiConfig",
     "django.contrib.staticfiles",
 ]
-DATABASES = {
-    "default": dj_database_url.config(
-        # Replace this value with your local database's connection string.
-        default=DATBASE_URL,
-        conn_max_age=600,
-    )
-}
+
+if DEBUG is False:
+  DATABASES = {
+      "default": dj_database_url.config(
+          # Replace this value with your local database's connection string.
+          default=DATBASE_URL,
+          conn_max_age=600,
+      )
+  }
+else:
+      DATABASES = {
+          "default": {
+              "ENGINE": "django.db.backends.sqlite3",
+              "NAME": BASE_DIR / "db.sqlite3",
+          }
+      }
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
