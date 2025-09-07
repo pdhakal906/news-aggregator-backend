@@ -12,14 +12,13 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from os import getenv
 from dotenv import load_dotenv
-import dj_database_url
 
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATBASE_URL = os.getenv("DATABASE_URL")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -32,7 +31,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
-
+CONN_MAX_AGE = 0
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,20 +46,27 @@ INSTALLED_APPS = [
 ]
 
 if DEBUG is False:
-  DATABASES = {
-      "default": dj_database_url.config(
-          # Replace this value with your local database's connection string.
-          default=DATBASE_URL,
-          conn_max_age=600,
-      )
-  }
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": getenv("PGDATABASE"),
+            "USER": getenv("PGUSER"),
+            "PASSWORD": getenv("PGPASSWORD"),
+            "HOST": getenv("PGHOST"),
+            "PORT": getenv("PGPORT", 5432),
+            "OPTIONS": {
+                "sslmode": "require",
+            },
+            "DISABLE_SERVER_SIDE_CURSORS": True,
+        }
+    }
 else:
-      DATABASES = {
-          "default": {
-              "ENGINE": "django.db.backends.sqlite3",
-              "NAME": BASE_DIR / "db.sqlite3",
-          }
-      }
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
