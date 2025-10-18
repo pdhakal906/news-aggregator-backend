@@ -15,3 +15,14 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Me(models.Model):
+    bio = models.TextField()
+
+    class Meta:
+        verbose_name = "Me"
+        verbose_name_plural = "About Me"
+
+    def __str__(self):
+        return self.bio[:50] + "..." if len(self.bio) > 50 else self.bio
